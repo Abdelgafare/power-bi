@@ -1,0 +1,37 @@
+###creation of new table to connect the model
+DAX DateTable = 
+ADDCOLUMNS (
+    //CALENDAR(DATE(2020,1,1), DATE(2024,12,31)),
+    CALENDARAUTO(),
+    "Year", YEAR([Date]),
+    "Quarter", "Q" & FORMAT(CEILING(MONTH([Date])/3, 1), "#"),
+    "Quarter No", CEILING(MONTH([Date])/3, 1),
+    "Month No", MONTH([Date]),
+    "Month Name", FORMAT([Date], "MMMM"),
+    "Month Short Name", FORMAT([Date], "MMM"),
+    "Month Short Name Plus Year", FORMAT([Date], "MMM,yy"),
+    "DateSort", FORMAT([Date], "yyyyMMdd"),
+    "Day Name", FORMAT([Date], "dddd"),
+    "Details", FORMAT([Date], "dd-MMM-yyyy"),
+    "Day Number", DAY ( [Date] )
+)
+
+### the calculations needed
+##Measures Total Sales
+Sales = SUM(Sales_Data[Sales])
+
+##Measures Previous Year Toal Sales
+Sales PY = CALCULATE([Sales], SAMEPERIODLASTYEAR(DateTable[Date]))
+
+##Diffrence Between Current Year Sales & Previous Year Sales
+Sales vs PY = [Sales] - [Sales PY]
+
+##Percentage Increase or Decrease in sales year on year (YOY%)
+Sales vs py % = DIVIDE([Sales vs PY],[Sales],0)
+## Products Sold = SUM(Sales_Data[Order Quantity])
+## Profit = SUM(Sales_Data[Profit]) 
+## Profit LY = CALCULATE([Profit], SAMEPERIODLASTYEAR(DateTable[Date]))
+## Profit Vs LY = [Profit]- [Profit LY]
+## Profit vs LY % = [Profit Vs LY]/[Profit]
+## Profit Margin = DIVIDE([Profit],[Sales],0)
+## Total Cost = SUM(Sales_Data[Total Cost]) 
